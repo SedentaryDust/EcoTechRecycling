@@ -1,0 +1,60 @@
+tags:
+  - name: auth
+    description: Login Server
+  - name: profile
+    description: Get info by Id
+  - name: Sign Up
+    description: Crate new User
+  - name: JsonStudent
+    description: Show the Students Names
+  
+components:
+  schemas:
+    UsernamePassword:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: MyName
+        password:
+          type: string
+          example: Str0ngP@33worD
+
+    UsernamePasswordUpdate:
+      type: object
+
+      properties:
+        username:
+          type: string
+          example: MyName
+        password:
+          type: string
+          example: Str0ngP@33worD
+    Id:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 150
+
+  parameters:
+    Id:
+      in: path
+      name: id
+      description: Unique id
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+  
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
