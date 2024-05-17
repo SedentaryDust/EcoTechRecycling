@@ -1,3 +1,13 @@
+import { PrismaClient } from '@prisma/client';
+
+
+/**
+* 
+
+* MOCK para testes
+*  
+*/
+
 let users = [
     {id:1 ,username:"MyName" , password:"Str0ngP@33worD", titutlo: '123' , data: '123' , hora:"19:45" , endereco:{
             logradouro:"rua logo ali 923",
@@ -14,67 +24,61 @@ let users = [
 
 
 ];
-/**
-* 
-*somente para a atividade colocarei username e password no local
-*  
-*/
 
-function formatUser(user){
-    if(!user) return user;
-    return {...user , password:undefined};
 
+const prisma = new PrismaClient();
+
+async function formatUser(user) {
+    if (!user) return user;
+    return { ...user, password: undefined };
 }
 
-export async function loadbyId(id){
-    return formatUser(users.find(u=> u.id === id));
-
+export async function loadbyId(id) {
+    const user = await prisma.user.findUnique({
+        where: { id }
+    });
+    return formatUser(user);
 }
 
-
-export async function loadByCred({username, password}){
-    return formatUser(users.find(u => 
-            u.username === username &&
-            u.password === password
-        ));
+export async function loadByCred({ username, password }) {
+    const user = await prisma.user.findFirst({
+        where: { username, password }
+    });
+    return formatUser(user);
 }
 
-
-export async function singUp ({username,password}){
-    if (!username || !password ){
+export async function singUp({ username, password }) {
+    if (!username || !password) {
         return null;
-
     }
-        const singup = {id: ((users.length) + 1 ), login:username , password:password ,admin:false};
-        users.push(singup);
-        return singup;
+
+    const newUser = await prisma.user.create({
+        data: { username: username, 
+                password: password, 
+                }
+    });
+    return formatUser(newUser);
 }
 
-
-export async function deletebyid(id){
-
-    
-    users.splice(users.indexOf(id) , 1);
+export async function deletebyid(id) {
+    await prisma.user.delete({
+        where: { id }
+    });
     return 'done';
 }
 
-
-export async function updatebyid(id,username,password){
-
-   users.map(u => {
-    if(u.id === id){
-        if(username){
-        u.username = username;
-        }
-        if(password){
-        u.password = password
-        }
-        return null
-
+export async function updatebyid(id, { username, password }) {
+    const updateData = {};
+    if (username) {
+        updateData.login = username;
+    }
+    if (password) {
+        updateData.password = password;
     }
 
-   })
-
-
-
+    const updatedUser = await prisma.user.update({
+        where: { id },
+        data: updateData
+    });
+    return formatUser(updatedUser);
 }
