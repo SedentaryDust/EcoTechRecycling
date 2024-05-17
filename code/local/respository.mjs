@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
+import dotenv from 'dotenv';
 
+dotenv.config();
 
 /**
 * 
@@ -47,18 +49,22 @@ export async function loadByCred({ username, password }) {
     return formatUser(user);
 }
 
-export async function singUp({ username, password }) {
-    if (!username || !password) {
+export async function singUp({ username, email, password, userType }) {
+    if (!username || !password || !userType) {
         return null;
     }
 
     const newUser = await prisma.user.create({
-        data: { username: username, 
-                password: password, 
-                }
-    });
+        data: { 
+            username: username,
+            email: email,
+            password: password, 
+            userType: userType
+        }
+    });    
     return formatUser(newUser);
 }
+
 
 export async function deletebyid(id) {
     await prisma.user.delete({

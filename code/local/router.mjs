@@ -1,5 +1,7 @@
 import { login  , getUser , delete_user,update_user} from "./services.mjs";
 import { singUp } from "./respository.mjs";
+
+
 /**
  * @openapi
  * /evento/login:
@@ -93,7 +95,7 @@ export async function get_user(req, res, _) {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: "#/components/schemas/UsernamePassword" 
+ *             $ref: "#/components/schemas/User" 
  * 
  *     responses:
  *       '200':

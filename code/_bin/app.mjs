@@ -16,9 +16,7 @@ const app = express();
 const BASE_PATH = `${__dirname}/../`;
 
 app.use(logger('dev'));
-app.use(cors({
-    origin: 'http://127.0.0.1:3000' // Permitir apenas esta origem
-}));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

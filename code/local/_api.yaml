@@ -7,9 +7,25 @@ tags:
     description: Crate new User
   - name: JsonStudent
     description: Show the Students Names
-  
 components:
   schemas:
+    User:
+      type: object
+      required:
+        - username
+        - email
+        - password
+        - userType
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        userType:
+          type: string
+
     UsernamePassword:
       type: object
       required:
@@ -22,7 +38,26 @@ components:
         password:
           type: string
           example: Str0ngP@33worD
-
+    SignUP:
+      type: object
+      required:
+        - fullName
+        - CPF
+        - mail
+        - password
+      properties:
+        fullName:
+          type: string
+          example: My Full Name
+        CPF:
+          type: string
+          example: aaaaaaaaaaa
+        mail:
+          type: string
+          example: myhost@provider.com
+        password:
+          type: string
+          example: Str0ngP@33worD
     UsernamePasswordUpdate:
       type: object
 
