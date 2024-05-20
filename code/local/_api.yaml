@@ -9,13 +9,21 @@ tags:
     description: Show the Students Names
 components:
   schemas:
+    RoleInfo:
+        type: object
+        properties:
+          CPF:
+            type: string
+          address:
+            type: string
+          userRole:
+            type: string
     User:
       type: object
       required:
         - username
         - email
         - password
-        - userType
       properties:
         username:
           type: string
@@ -23,9 +31,6 @@ components:
           type: string
         password:
           type: string
-        userType:
-          type: string
-
     UsernamePassword:
       type: object
       required:

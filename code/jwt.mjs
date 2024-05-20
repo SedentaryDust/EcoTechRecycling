@@ -10,7 +10,7 @@ function secToDate(s) {
     return new Date(s * 1000);
 }
 
-export function createToken(user) {
+export async function createToken(user) {
     const DAYS = 10;
     const exp = new Date();
     exp.setDate(exp.getDate() + DAYS);
@@ -22,10 +22,10 @@ export function createToken(user) {
         sub: user.id,
         user: {
             id: user.id,
-            login: user.login,
-            roles: user.admin ? ['ADMIN', 'USER'] : ['USER']
+            userType : user.userType
         }
     }
+    console.log(payload.user);
     return jwt.encode(payload, SECRET);
 }
 

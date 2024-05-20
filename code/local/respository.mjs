@@ -1,31 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
+import {decode} from '../jwt.mjs'
+
 
 dotenv.config();
-
-/**
-* 
-
-* MOCK para testes
-*  
-*/
-
-let users = [
-    {id:1 ,username:"MyName" , password:"Str0ngP@33worD", titutlo: '123' , data: '123' , hora:"19:45" , endereco:{
-            logradouro:"rua logo ali 923",
-            cidade:"curitiba",
-            estado:"Parana"
-    }, status:"closed" , descricao:"de arromba"},
-    {id:2  , username:"321" , password:"321", titutlo: '321' , data: '321' , hora:"19:45" , endereco:{
-            logradouro:"rua do outro lado 923",
-            cidade:"curitiba",
-            estado:"Parana"
-        }, status:"closed" , descricao:"de arromba"},
-    {id:3 , username:"joseph" , password:"me" , admin:false}
-    
-
-
-];
 
 
 const prisma = new PrismaClient();
@@ -40,6 +18,47 @@ export async function loadbyId(id) {
         where: { id }
     });
     return formatUser(user);
+    
+}
+
+export async function changeRoleTo(req){
+
+        const {CPF , address , userRole} = req.body;
+
+        const {user} = decode(req.headers.authorization);
+
+        if (userRole == "DOADOR"){
+           return changeRoleToDonator(user.id , {CPF , address , userRole})
+        }
+        return changeRoleToCollector(user.id , {CPF , address , userRole})
+}
+
+export async function changeRoleToDonator(id , {CPF , address , userRole}){
+        const updated = updateRole(id , userRole);
+        const user = await prisma.donor.create({
+            data: {
+                userId : id,
+
+                additionalInfoDonor : address
+
+            }
+        })
+        deleteColectorById(id);
+        return user;
+}
+
+export async function changeRoleToCollector(id , {CPF , address}){
+    const updated = updateRole(id);
+    const user = await prisma.collector.create({
+        data: {
+            userId : id,
+            CPF : CPF,
+            additionalInfoCollector : address
+
+        }
+    })
+    deleteDonorById(id);
+    return user;
 }
 
 export async function loadByCred({ username, password }) {
@@ -49,28 +68,55 @@ export async function loadByCred({ username, password }) {
     return formatUser(user);
 }
 
-export async function singUp({ username, email, password, userType }) {
-    if (!username || !password || !userType) {
+export async function singUp({ username, email, password }) {
+    if (!username || !password || !email) {
         return null;
     }
+
 
     const newUser = await prisma.user.create({
         data: { 
             username: username,
             email: email,
             password: password, 
-            userType: userType
+            userType: "DOADOR"
         }
-    });    
+    });
+
+    makeBasicRelation(newUser.id)  
     return formatUser(newUser);
 }
-
 
 export async function deletebyid(id) {
     await prisma.user.delete({
         where: { id }
     });
     return 'done';
+}
+
+async function deleteDonorById(id){
+    await prisma.donor.delete({
+        where: { userId : id }
+    });
+    return 'done';
+}
+
+async function deleteColectorById(id){
+    await prisma.collector.delete({
+        where: { userId : id }
+    });
+    return 'done';
+}
+
+async function makeBasicRelation(id ,userType ,additionalInfoCollector){
+    await prisma.donor.create({
+        data:{
+            userId: id,
+            additionalInfoDonor: additionalInfoCollector ? additionalInfoCollector : "none"
+        }
+
+
+    })
 }
 
 export async function updatebyid(id, { username, password }) {
@@ -81,10 +127,18 @@ export async function updatebyid(id, { username, password }) {
     if (password) {
         updateData.password = password;
     }
-
     const updatedUser = await prisma.user.update({
         where: { id },
         data: updateData
     });
     return formatUser(updatedUser);
+}
+
+async function updateRole(id , userRole){
+    const updateUser = await prisma.user.update({
+        where: { id } , 
+        data : {userType : userRole}
+    });
+
+    return updateUser;
 }

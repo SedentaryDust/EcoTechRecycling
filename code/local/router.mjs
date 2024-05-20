@@ -1,4 +1,4 @@
-import { login  , getUser , delete_user,update_user} from "./services.mjs";
+import { login  , getUser , delete_user,update_user, changeRole} from "./services.mjs";
 import { singUp } from "./respository.mjs";
 
 
@@ -33,32 +33,27 @@ import { singUp } from "./respository.mjs";
 export async function user_login(req, res, _){
     const user  = await login(req.body);
 
-    return user ? res.send(`usuario autenticado com o token "${user.token}"`) : res.sendStatus(401);
+    return user ? res.send(`usuario autenticado com o token "${user.token}  + ${user.id}"`) : res.sendStatus(401);
 
 }
-
-
 /**
  * @openapi
  * 
- * /evento/{id}:
- *   get:
+ * /evento/change:
+ *   post:
  *     tags:
- *       - "Get Info By Id"
- *     
- *     parameters:
- *       - in: path
- *         name: id
- *         description: Get user Info By Id
- *         required: true
- *         schema:
- *           type: integer
- *           example: 100
- * 
+ *       - "Transform the user Class to the chosed"
  * 
  *     summary: "Retrives user info by id"
  * 
- *     operationId: get_user
+ *     operationId: transformUserRole
+ *     requestBody:
+ *       description: Login information
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/RoleInfo" 
  *     x-eov-operation-handler: local/router
  *     responses:
  *       '200':
@@ -72,10 +67,11 @@ export async function user_login(req, res, _){
  *
  */
 
-export async function get_user(req, res, _) {  
-    if(!req.user) return res.send("Authorized Users Only");
-    const user = await getUser(parseInt(req.params.id));
-    return user ? res.json(user) : res.sendStatus(404);  
+export async function transformUserRole(req, res, _) {  
+    //if(!req.user) return res.send("Authorized Users Only");
+    //console.log(req)
+    const user = changeRole(req);
+    return user ? res.sendStatus(200) : res.sendStatus(404);  
 }
 /**
  * @openapi
@@ -110,7 +106,7 @@ export async function singup(req, res, _){
 
     const new_user = await singUp(req.body);
 
-    return new_user ? res.send(`usuario criado login"${new_user.login}"`) : res.sendStatus(401);
+    return new_user ? res.send(`usuario criado login"${new_user.id}"`) : res.sendStatus(401);
 }
 
 
