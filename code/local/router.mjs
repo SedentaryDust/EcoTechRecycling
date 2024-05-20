@@ -32,9 +32,7 @@ import { singUp } from "./respository.mjs";
  */
 export async function user_login(req, res, _){
     const user  = await login(req.body);
-
-    return user ? res.send(`usuario autenticado com o token "${user.token}  + ${user.id}"`) : res.sendStatus(401);
-
+    return user ? res.send(`${user.token}`) : res.sendStatus(401);
 }
 /**
  * @openapi
@@ -106,7 +104,7 @@ export async function singup(req, res, _){
 
     const new_user = await singUp(req.body);
 
-    return new_user ? res.send(`usuario criado login"${new_user.id}"`) : res.sendStatus(401);
+    return new_user ? res.send(`usuario criado login`) : res.sendStatus(401);
 }
 
 
@@ -117,7 +115,7 @@ export async function singup(req, res, _){
  *     summary: "Delete some user"
  * 
  *     tags:
- *       - "Delete"
+ *       - "delete"
  *     operationId: deleteuser
  *     x-eov-operation-handler: local/router
  * 
@@ -128,7 +126,7 @@ export async function singup(req, res, _){
  *       '400':
  *         description: "Invalid data provided"
  *       '401':
- *         description: "DEleting process failed"
+ *         description: "Deleting process failed"
  * 
  *     security: 
  *       - {}
@@ -137,46 +135,11 @@ export async function singup(req, res, _){
  */
  
 export async function deleteuser(req, res , _){
-    if (!req.user) res.send("Authorized Users Only");
+    console.log(req.headers.authorization)
+    const user  = await delete_user(req.headers.authorization);
     
-    const user  = await delete_user(req.user);
-    return user ? res.send(`usuario do id ${req.user.id} deletado`) : res.sendStatus(401);
-
-
-    
-
-
+    return user ? res.send(`usuario do id ${user} deletado`) : res.sendStatus(401);
 }
-
-/**
- * @openapi
- * 
- * /evento/StudentInfo:
- *   get:
- *     summary: "Retrives user of the students"
- * 
- *     tags:
- *       - "JsonStudent"
- * 
- *     operationId: get_student_info
- *     x-eov-operation-handler: local/router
- * 
- *     responses:
- *       '200':
- *         description: "Returns the student info"
- *       '404':
- *         description: "Request Failed"
- *
- */
-
-
-export async function get_student_info(req, res, _){
-
-    return res.send("Lucas Carvalho e Matheus Kozak");
-
-}
-
-
 /**
  * @openapi
  * /local/update/me:
@@ -212,17 +175,9 @@ export async function get_student_info(req, res, _){
  *       - JWT: ['USER']
  *
  */
-
-
 export async function updateuser(req,res, _){
-    if(!req.user) res.send("Authorized Only");
+
     const user = update_user(req.user.id , req.body);
     return user ? res.send("Credential update sucess") : res.sendStatus(401)
 
 }
-
-
-
-
-
-

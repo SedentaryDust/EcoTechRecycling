@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
 import {decode} from '../jwt.mjs'
 
-
 dotenv.config();
 
 
@@ -87,7 +86,9 @@ export async function singUp({ username, email, password }) {
     return formatUser(newUser);
 }
 
-export async function deletebyid(id) {
+export async function deletebyid(auth) {
+    const account = decode(auth);
+    const id = account.id;
     await prisma.user.delete({
         where: { id }
     });
@@ -114,8 +115,6 @@ async function makeBasicRelation(id ,userType ,additionalInfoCollector){
             userId: id,
             additionalInfoDonor: additionalInfoCollector ? additionalInfoCollector : "none"
         }
-
-
     })
 }
 
@@ -139,6 +138,5 @@ async function updateRole(id , userRole){
         where: { id } , 
         data : {userType : userRole}
     });
-
     return updateUser;
 }

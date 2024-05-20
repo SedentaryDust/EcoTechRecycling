@@ -43,29 +43,8 @@ components:
         password:
           type: string
           example: Str0ngP@33worD
-    SignUP:
-      type: object
-      required:
-        - fullName
-        - CPF
-        - mail
-        - password
-      properties:
-        fullName:
-          type: string
-          example: My Full Name
-        CPF:
-          type: string
-          example: aaaaaaaaaaa
-        mail:
-          type: string
-          example: myhost@provider.com
-        password:
-          type: string
-          example: Str0ngP@33worD
     UsernamePasswordUpdate:
       type: object
-
       properties:
         username:
           type: string

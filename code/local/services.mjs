@@ -26,8 +26,8 @@ export async function getUser(id){
     
 }
 
-export async function delete_user({id}){
-    return deletebyid(id);
+export async function delete_user(auth){
+    return deletebyid(auth);
     
 }
 
